@@ -27,15 +27,17 @@ class UVMesh extends Mesh
 			document.getElementById(imageID)
 		);
 		this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+
+		this.textureLocation = this.gl.getUniformLocation(this.program, "texture");
 	}
 
 	activate()
 	{
 		super.activate();
 
+		// prepare tex coord attribute for drawing
 		this.gl.enableVertexAttribArray(this.texCoordAttribLocation);
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoordBuffer);
-		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 		this.gl.vertexAttribPointer(
 			this.texCoordAttribLocation,
 			2,
@@ -44,11 +46,19 @@ class UVMesh extends Mesh
 			2 * Float32Array.BYTES_PER_ELEMENT,
 			0
 		);
+
+		// set up texture for use in texture slot 0
+		this.gl.uniform1i(this.textureLocation, 0);
+		this.gl.activeTexture(this.gl.TEXTURE0);
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
 	}
 
 	deactivate()
 	{
 		super.deactivate();
+
+		// unbind textures, disable texCoord attribute array
 		this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+		this.gl.disableVertexAttribArray(this.texCoordAttribLocation);
 	}
 }

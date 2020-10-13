@@ -3,12 +3,12 @@ var RunDemo = function (filemap)
 	console.log("Initializing Demo");
 
 	// get canvas, set dimensions to fill browser window
-	var canvas = document.getElementById('the_canvas');
+	const canvas = document.getElementById('the_canvas');
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 
 	// get WebGL context, confirm...
-	var gl = canvas.getContext('webgl');
+	const gl = canvas.getContext('webgl');
 
 	if (!gl)
 	{
@@ -31,35 +31,43 @@ var RunDemo = function (filemap)
 	gl.cullFace(gl.BACK);
 
 	// create shader program
-	var uvProgram = createShader(
+	const uvProgram = createShader(
 		gl, 
 		filemap['uvVertexShaderText'],
 		filemap['uvFragShaderText']
 	);
 
-	var rgbProgram = createShader(
+	const rgbProgram = createShader(
 		gl, 
 		filemap['rgbVertexShaderText'],
 		filemap['rgbFragShaderText']
 	);
 
-	var uniformProgram = createShader(
+	const uniformProgram = createShader(
 		gl,
 		filemap['uniformVertexShaderText'],
 		filemap['uniformFragShaderText']
 	);
 
-	var shaders = [
+	// ** STEP 4 **
+	// const uvBumpProgram = createShader(
+	// 	gl,
+	// 	filemap['uvBumpVertexShaderText'],
+	// 	filemap['uvBumpFragShaderText']
+	// );
+
+	const shaders = [
 		uvProgram,
 		rgbProgram,
-		uniformProgram
+		uniformProgram,
+		// uvBumpProgram  // ** STEP 4 **
 	];
 
 	// camera
-	var viewMatrix = new Float32Array(16);
-	var cameraPosition = [0,7,15];
-	var lookAtPosition = [0,2,0];
-	var cameraUpDirection = [0,1,0];
+	const viewMatrix = new Float32Array(16);
+	const cameraPosition = [0,7,15];
+	const lookAtPosition = [0,2,0];
+	const cameraUpDirection = [0,1,0];
 	mat4.lookAt(
 		viewMatrix,       // target matrix to apply values to
 		cameraPosition,   // where is the camera
@@ -67,11 +75,11 @@ var RunDemo = function (filemap)
 		cameraUpDirection // which direction is upward from the cameras PoV
 	);
 
-	var projMatrix = new Float32Array(16);
-	var fieldOfView = Math.PI / 4;
-	var aspect = canvas.width / canvas.height;
-	var near = 0.01;
-	var far = 1000.0;
+	const projMatrix = new Float32Array(16);
+	const fieldOfView = Math.PI / 4;
+	const aspect = canvas.width / canvas.height;
+	const near = 0.01;
+	const far = 1000.0;
 	mat4.perspective(
 		projMatrix,  // target matrix
 		fieldOfView, // vertical field of view, in radians
@@ -81,35 +89,35 @@ var RunDemo = function (filemap)
 	);
 
 	// light
-	var ambientLight = [0.2, 0.2, 0.2];
-	var lightDirection = [1, -0.5, -1];
-	var lightIntensity = [1.0, 1.0, 1.0];
+	const ambientLight = [0.2, 0.2, 0.2];
+	const lightDirection = [1, -0.5, -1];
+	const lightIntensity = [1.0, 1.0, 1.0];
 
 	// apply light and camera to shaders
-	for (var i = 0; i < shaders.length; i++)
+	for (let i = 0; i < shaders.length; i++)
 	{
-		var shader = shaders[i];
+		const shader = shaders[i];
 
 		gl.useProgram(shader);
 
-		var matViewUniformLocation = gl.getUniformLocation(shader, 'mView');
+		const matViewUniformLocation = gl.getUniformLocation(shader, 'mView');
 		gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
 
-		var matProjUniformLocation = gl.getUniformLocation(shader, 'mProj');
+		const matProjUniformLocation = gl.getUniformLocation(shader, 'mProj');
 		gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
 	
-		var ambientLightUniformLocation = gl.getUniformLocation(shader, 'ambientLight');
+		const ambientLightUniformLocation = gl.getUniformLocation(shader, 'ambientLight');
 		gl.uniform3fv(ambientLightUniformLocation, ambientLight);
 
-		var lightDirectionUniformLocation = gl.getUniformLocation(shader, 'lightDirection');
-		var lightIntensityUniformLocation = gl.getUniformLocation(shader, 'lightIntensity');
+		const lightDirectionUniformLocation = gl.getUniformLocation(shader, 'lightDirection');
+		const lightIntensityUniformLocation = gl.getUniformLocation(shader, 'lightIntensity');
 		gl.uniform3fv(lightDirectionUniformLocation, lightDirection);
 		gl.uniform3fv(lightIntensityUniformLocation, lightIntensity);
 	}
 
 	// initial models
 
-	var rgbCube = new RGBMesh(
+	const rgbCube = new RGBMesh(
 		gl, rgbProgram,
 		Cube.positionArray(),
 		Cube.normalArray(),
@@ -118,7 +126,7 @@ var RunDemo = function (filemap)
 	);
 
 	const yellow = new Float32Array([1.0, 1.0, 0.0]);
-	var yellowCube = new UniformColorMesh(
+	const yellowCube = new UniformColorMesh(
 		gl, uniformProgram,
 		Cube.positionArray(),
 		Cube.normalArray(),
@@ -129,7 +137,7 @@ var RunDemo = function (filemap)
 	const purple = new Float32Array([1.0, 0.0, 1.0]);
 	const latBands = 30;
 	const longBands = 30;
-	var purpleSphere = new UniformColorMesh(
+	const purpleSphere = new UniformColorMesh(
 		gl, uniformProgram,
 		Sphere.positionArray(latBands, longBands),
 		Sphere.normalArray(latBands, longBands),
@@ -148,9 +156,9 @@ var RunDemo = function (filemap)
 	// Uncomment the radioactiveCrate creation
 	// and translation below, and the calls to rotate
 	// and draw it in the main, once you've completed
-	// Cube.uvRepeateArray()
+	// Cube.uvRepeatArray()
 
-	// var radioactiveCrate = new UVMesh(
+	// const radioactiveCrate = new UVMesh(
 	// 	gl, uvProgram,
 	// 	Cube.positionArray(),
 	// 	Cube.normalArray(),
@@ -166,7 +174,7 @@ var RunDemo = function (filemap)
 	// call to "drawTestCubes" in the main once you've finished
 	// writing Cube.uvUnwrappedArray()
 
-	// var testCube = new UVMesh(
+	// const testCube = new UVMesh(
 	// 	gl, uvProgram,
 	// 	Cube.positionArray(),
 	// 	Cube.normalArray(),
@@ -178,7 +186,7 @@ var RunDemo = function (filemap)
 	// 	// because WebGL and Blender use opposite UV conventions...
 	// );
 
-	// var testPositions = [
+	// const testPositions = [
 	// 	new Vector(-3, 4, 0),
 	// 	new Vector(-1, 4, 0),
 	// 	new Vector(1,  4, 0),
@@ -188,7 +196,7 @@ var RunDemo = function (filemap)
 	// 	new Vector(-3, 3, 2),
 	// 	new Vector(3,  3, 2)
 	// ];
-	// var testRotations = [
+	// const testRotations = [
 	// 	new Quaternion(Math.PI/2, 0, 1, 0),
 	// 	new Quaternion(0, 0, 1, 0),
 	// 	new Quaternion(-Math.PI/2, 0, 1, 0),
@@ -199,7 +207,7 @@ var RunDemo = function (filemap)
 	// 	new Quaternion()
 	// ];
 
-	// var drawTestCubes = function()
+	// const drawTestCubes = function()
 	// {
 	// 	testRotations[6].compose(yRotSlow);
 	// 	testRotations[7].compose(xRotSlow);
@@ -212,12 +220,12 @@ var RunDemo = function (filemap)
 	// }
 
 
-	// ** STEP 3 **
+	// ** STEP 3 ** OPTIONAL
 	// Uncomment the earth creation below and the lines to
 	// rotate and draw it in the main once you've finished
 	// writing Sphere.uvArray()
 
-	// var earth = new UVMesh(
+	// const earth = new UVMesh(
 	// 	gl, uvProgram,
 	// 	Sphere.positionArray(30, 30),
 	// 	Sphere.normalArray(30, 30),
@@ -226,16 +234,40 @@ var RunDemo = function (filemap)
 	// 	'earth-texture'
 	// );
 
-	// constants for movement
-	var angle = Math.PI / 200;
-	var origin = new Vector();
-	var yRotSlow = new Quaternion(angle, 0, 1, 0);
-	var yRotFast = new Quaternion(angle*3, 0, 1, 0)
-	var xRotSlow = new Quaternion(angle, 1, 0, 0);
-	var xRotFast = new Quaternion(angle*3, 1, 0, 0)
-	var zRot = new Quaternion(angle*3, 0, 0, 1);
+	// ** STEP 4 **
+	// Create a shader which takes a second texture
+	// (the normal map) and a corresponding extension
+	// to the UVMesh class called "BumpUVMesh".
+	// Add your shader to the imports at the bottom,
+	// create the shader where the others are created above
+	// (search for createShader), add your new shader to the
+	// list of shaders, and uncomment the lines below
+	// for the bumpy cube creation, as well as the lines
+	// in the main to draw and rotate it.
 
-	var main = function()
+	// const bumpyCube = new BumpUVMesh(
+	// 	gl, uvBumpProgram,
+	// 	Cube.positionArray(),
+	// 	Cube.normalArray(),
+	// 	Cube.uvRepeatArray(),
+	// 	Cube.indexArray(),
+	// 	'bumpy-texture',
+	// 	'bumpy-normal'
+	// );
+	// bumpyCube.setPosition(new Vector(-0.5, 7, 13));
+	// bumpyCube.setScale(new Vector(0.5, 0.5, 0.5));
+
+	// constants for movement
+	const angle = Math.PI / 200;
+	const origin = new Vector();
+	const yRotSlow = new Quaternion(angle, 0, 1, 0);
+	const yRotFast = new Quaternion(angle*3, 0, 1, 0)
+	const xRotSlow = new Quaternion(angle, 1, 0, 0);
+	const xRotFast = new Quaternion(angle*3, 1, 0, 0)
+	const zRot = new Quaternion(angle*3, 0, 0, 1);
+	const rotSoSlow = new Quaternion(angle / 5, 1, 0.5, 1);
+
+	const main = function()
 	{
 		gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
 
@@ -263,6 +295,10 @@ var RunDemo = function (filemap)
 		// earth.rotate(yRotSlow);
 		// earth.draw();
 
+		// ** STEP 4 ** See instructions above
+		// bumpyCube.rotate(rotSoSlow);
+		// bumpyCube.draw();
+
 		requestAnimationFrame(main);
 	}
 	requestAnimationFrame(main);
@@ -276,7 +312,9 @@ var InitDemo = function()
 		['rgbVertexShaderText', './shaders/vert.rgb.glsl'],
 		['rgbFragShaderText', './shaders/frag.rgb.glsl'],
 		['uniformVertexShaderText', './shaders/vert.uniform.glsl'],
-		['uniformFragShaderText', './shaders/frag.uniform.glsl']
+		['uniformFragShaderText', './shaders/frag.uniform.glsl'],
+		['uvBumpVertexShaderText', './shaders/vert.uvbump.glsl'],
+		['uvBumpFragShaderText', './shaders/frag.uvbump.glsl']
 	];
 	
 	var importer = new resourceImporter(imports, RunDemo);
