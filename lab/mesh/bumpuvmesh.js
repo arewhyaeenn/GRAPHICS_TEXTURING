@@ -49,7 +49,7 @@ class BumpUVMesh extends UVMesh
 		If this crashes, it is most likely because there aren't 3n
 		elements in the index array.
 	*/
-	static createTangentArray(positionArray, uvArray, normalArray, indexArray)
+	static createTangentArray(positionArray, uvArray, normalArray, indexArray, flipTexture)
 	{
 		const tangentDict = {};
 
@@ -125,6 +125,10 @@ class BumpUVMesh extends UVMesh
 		for (let vert_index = 0; 3*vert_index < positionArray.length; vert_index++)
 		{
 			const tangent = Vector.average(tangentDict[vert_index]);
+			if (flipTexture)
+			{
+				tangent.scale(new Vector(-1, -1, -1));
+			}
 			const normal = new Vector(
 				normalArray[3*vert_index],
 				normalArray[3*vert_index+1],
